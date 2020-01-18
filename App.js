@@ -5,6 +5,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import RecordScreen from "./src/screens/RecordScreen";
 import GalleryScreen from "./src/screens/GalleryScreen";
 import PlaybackScreen from "./src/screens/PlaybackScreen";
+import { LocationProvider } from "./src/context/LocationContext";
 
 const bottomNavigator = createBottomTabNavigator({
   Record: RecordScreen,
@@ -14,4 +15,12 @@ const bottomNavigator = createBottomTabNavigator({
   })
 });
 
-export default createAppContainer(bottomNavigator);
+const App = createAppContainer(bottomNavigator);
+
+export default () => {
+  return (
+    <LocationProvider>
+      <App />
+    </LocationProvider>
+  );
+};

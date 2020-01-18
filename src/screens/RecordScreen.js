@@ -1,46 +1,39 @@
-import "../_mockLocation";
-import React, { useEffect, useState } from "react";
+// import "../_mockLocation";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-navigation";
+import { SafeAreaView, withNavigationFocus } from "react-navigation";
 import Map from "../components/Map";
-import {
-  requestPermissionsAsync,
-  watchPositionAsync,
-  Accuracy
-} from "expo-location";
-const RecordScreen = () => {
-  const [err, setErr] = useState(null);
+import useLocation from "../hooks/useLocation";
+import LocationContext from "../context/LocationContext";
 
-  const startWatching = async () => {
-    try {
-      await requestPermissionsAsync();
-      await watchPositionAsync(
-        {
-          accuracy: Accuracy.BestForNavigation,
-          timeInterval: 1000
-        },
-        location => {
-          console.log(location);
-        }
-      );
-    } catch (e) {
-      setErr(e);
-    }
-  };
+const RecordScreen = ({ isFocused }) => {
+  const [recStatus, setRecStatus] = useState(false);
 
-  useEffect(() => {
-    startWatching();
-  }, []);
+  // useEffect(() => {
+  //   console.log("recStatus : ", recStatus);
+  //   console.log("isFocused : ", isFocused);
+  // }, [recStatus, isFocused]);
+
+  const { updateCurrentLocation, updatePathArray } = useContext(
+    LocationContext
+  );
+
+  const callback = useCallback(
+    location => {
+      updateCurrentLocation(location);
+      if (recStatus === true) updatePathArray(location);
+    },
+    [recStatus]
+  );
 
   return (
     <SafeAreaView forceInset={{ top: "always" }}>
       <Text style={{ fontSize: 48 }}>Record Screen</Text>
-      <Map />
-      {err ? <Text>EnableLocation</Text> : null}
+      <Map shouldTrack={isFocused || recStatus} callback={callback} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({});
 
-export default RecordScreen;
+export default withNavigationFocus(RecordScreen);
