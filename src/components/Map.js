@@ -20,7 +20,7 @@ const Map = ({ shouldTrack, callback }) => {
 
   return (
     <MapView
-      style={{ height: 300 }}
+      style={{ flex: 1 }}
       initialRegion={{
         latitude: currentLocation ? currentLocation.coords.latitude : 30.751883,
         longitude: currentLocation
