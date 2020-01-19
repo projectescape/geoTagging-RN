@@ -1,20 +1,14 @@
-// import "../_mockLocation";
-import React, { useEffect, useState, useCallback, useContext } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import "../_mockLocation";
+import React, { useState, useCallback, useContext } from "react";
+import { Text, StyleSheet, Button } from "react-native";
 import { SafeAreaView, withNavigationFocus } from "react-navigation";
 import Map from "../components/Map";
-import useLocation from "../hooks/useLocation";
 import LocationContext from "../context/LocationContext";
 
 const RecordScreen = ({ isFocused }) => {
   const [recStatus, setRecStatus] = useState(false);
 
-  // useEffect(() => {
-  //   console.log("recStatus : ", recStatus);
-  //   console.log("isFocused : ", isFocused);
-  // }, [recStatus, isFocused]);
-
-  const { updateCurrentLocation, updatePathArray } = useContext(
+  const { updateCurrentLocation, updatePathArray, pathArray } = useContext(
     LocationContext
   );
 
@@ -29,7 +23,19 @@ const RecordScreen = ({ isFocused }) => {
   return (
     <SafeAreaView forceInset={{ top: "always" }}>
       <Text style={{ fontSize: 48 }}>Record Screen</Text>
-      <Map shouldTrack={isFocused || recStatus} callback={callback} />
+      <Button
+        title="Toggle recStatus"
+        onPress={() => {
+          setRecStatus(!recStatus);
+        }}
+      />
+      <Button
+        title="Console pathArray"
+        onPress={() => {
+          console.log(pathArray);
+        }}
+      />
+      <Map shouldTrack={isFocused} callback={callback} />
     </SafeAreaView>
   );
 };

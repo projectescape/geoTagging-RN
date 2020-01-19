@@ -1,26 +1,40 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 
 const LocationContext = React.createContext();
 
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "updateCurrentLocation":
+      return { ...state, currentLocation: action.payload };
+    case "updatePathArray":
+      return { ...state, pathArray: [...state.pathArray, action.payload] };
+    case "resetPathArray":
+      return { ...state, pathArray: [] };
+    default:
+      return state;
+  }
+};
 export const LocationProvider = ({ children }) => {
-  const [currentLocation, setCurrentLocation] = useState(null);
-  const [pathArray, setPathArray] = useState([]);
+  const [state, dispatch] = useReducer(reducer, {
+    currentLocation: null,
+    pathArray: []
+  });
 
-  const updateCurrentLocation = loc => {
-    setCurrentLocation(loc);
+  const updateCurrentLocation = location => {
+    dispatch({ type: "updateCurrentLocation", payload: location });
   };
-  const updatePathArray = loc => {
-    setPathArray([...pathArray, loc]);
+  const updatePathArray = location => {
+    dispatch({ type: "updatePathArray", payload: location });
   };
   const resetPathArray = () => {
-    setPathArray([]);
+    dispatch({ type: "resetPathArray" });
   };
 
   return (
     <LocationContext.Provider
       value={{
-        currentLocation,
-        pathArray,
+        currentLocation: state.currentLocation,
+        pathArray: state.pathArray,
         updateCurrentLocation,
         updatePathArray,
         resetPathArray
