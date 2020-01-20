@@ -1,22 +1,110 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Text, View, TouchableOpacity, Dimensions } from "react-native";
 import { Camera } from "expo-camera";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as MediaLibrary from "expo-media-library";
 import * as Permissions from "expo-permissions";
 import * as FileSystem from "expo-file-system";
+import LocationContext from "../context/LocationContext";
 
-export default function App() {
+export default function App({ recStatus, setRecStatus }) {
+  let myCam = null;
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  let myCam;
+  const [camImgName, setCamImgName] = useState(null);
+  const [timeStamp, setTimeStamp] = useState(null);
 
+  const { pathArray, resetPathArray } = useContext(LocationContext);
+
+  //   For Camera Permission
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
+      const { status } =
+        (await Camera.requestPermissionsAsync()) &&
+        (await MediaLibrary.requestPermissionsAsync()) &&
+        (await Permissions.askAsync(Permissions.AUDIO_RECORDING));
       setHasPermission(status === "granted");
     })();
   }, []);
+
+  useEffect(() => {
+    if (recStatus) setTimeStamp(Date.now());
+  }, [recStatus]);
+
+  //   For Recording Video
+  useEffect(() => {
+    if (myCam)
+      (async () => {
+        if (recStatus) {
+          console.log("recording");
+          const dat = await myCam.recordAsync({ quality: "480p" });
+          console.log(dat);
+          //   Renaming from .mp4 to .geo.mp4
+          const newAdd =
+            dat.uri.slice(0, dat.uri.lastIndexOf(".mp4")) + ".geo.mp4";
+          console.log("newAdd : ", newAdd);
+          await FileSystem.moveAsync({ from: dat.uri, to: newAdd });
+          const asset = await MediaLibrary.createAssetAsync(newAdd);
+          const album = await MediaLibrary.getAlbumAsync("geoLocation");
+          console.log("album : ", album);
+          if (!album) {
+            console.log("Line 42");
+            const temp = await MediaLibrary.createAlbumAsync(
+              "geoLocation",
+              asset,
+              false
+            );
+            console.log("Line 48 temp : ", temp);
+          } else {
+            console.log("Line 50");
+            const temp = await MediaLibrary.addAssetsToAlbumAsync(
+              [asset],
+              album,
+              false
+            );
+            console.log("Line 56 temp : ", temp);
+          }
+          setCamImgName(
+            newAdd.slice(
+              newAdd.lastIndexOf("/") + 1,
+              newAdd.lastIndexOf(".geo")
+            )
+          );
+        } else {
+          console.log("Recording Stopped");
+          myCam.stopRecording();
+        }
+      })();
+  }, [recStatus]);
+
+  // For recording path
+  useEffect(() => {
+    if (camImgName) {
+      (async () => {
+        console.log("camImgName : ", camImgName);
+        console.log("timeStamp : ", timeStamp);
+        const filename =
+          (await FileSystem.cacheDirectory) + camImgName + ".geo";
+        const data = await FileSystem.writeAsStringAsync(
+          filename,
+          JSON.stringify({ timeStamp, pathArray })
+        );
+        const asset = await MediaLibrary.createAssetAsync(filename);
+        const album = await MediaLibrary.getAlbumAsync("geoLocation");
+        const temp = await MediaLibrary.addAssetsToAlbumAsync(
+          [asset],
+          album,
+          false
+        );
+        console.log("Data : ", data);
+        console.log("asset : ", asset);
+        console.log("asset : ", asset);
+        console.log("temp : ", temp);
+        resetPathArray();
+        setCamImgName(null);
+      })();
+    }
+  }, [camImgName]);
 
   if (hasPermission === null) {
     return <View />;
@@ -54,44 +142,19 @@ export default function App() {
           >
             <View
               style={{
-                alignItems: "center",
-                borderColor: "purple",
-                borderWidth: 2,
-                width: "100%",
-                flexDirection: "row"
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-around"
               }}
             >
               <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  borderColor: "red",
-                  borderWidth: 2,
-                  flex: 1
+                onPress={() => {
+                  setRecStatus(!recStatus);
                 }}
-                onPress={async () => {
-                  const dat = await myCam.getSupportedRatiosAsync();
-                  console.log(dat);
-                }}
-              >
-                <MaterialIcons name="camera" size={150} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  borderColor: "red",
-                  borderWidth: 2,
-                  flex: 1
-                }}
-                // onPress={() => {
-                //   setRecStatus(!recStatus);
-                // }}
               >
                 <MaterialIcons
-                  //   name={!recStatus ? "videocam" : "stop"}
-                  name="videocam"
-                  size={150}
+                  name={!recStatus ? "videocam" : "stop"}
+                  size={100}
                   color="white"
                 />
               </TouchableOpacity>
@@ -104,24 +167,24 @@ export default function App() {
               flexDirection: "row"
             }}
           >
-            <TouchableOpacity
-              style={{
-                flex: 0.1,
-                alignSelf: "flex-end",
-                alignItems: "center"
-              }}
-              onPress={() => {
-                setType(
-                  type === Camera.Constants.Type.back
-                    ? Camera.Constants.Type.front
-                    : Camera.Constants.Type.back
-                );
-              }}
-            >
-              <Text style={{ fontSize: 18, marginBottom: 10, color: "white" }}>
-                Flip
-              </Text>
-            </TouchableOpacity>
+            {!recStatus ? (
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  alignSelf: "flex-end",
+                  alignItems: "center"
+                }}
+                onPress={() => {
+                  setType(
+                    type === Camera.Constants.Type.back
+                      ? Camera.Constants.Type.front
+                      : Camera.Constants.Type.back
+                  );
+                }}
+              >
+                <MaterialIcons name="switch-camera" color="white" size={40} />
+              </TouchableOpacity>
+            ) : null}
           </View>
         </Camera>
       </View>

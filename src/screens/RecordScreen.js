@@ -1,4 +1,4 @@
-// import "../_mockLocation";
+import "../_mockLocation";
 import React, { useState, useCallback, useContext } from "react";
 import { Text, StyleSheet, Button } from "react-native";
 import { SafeAreaView, withNavigationFocus } from "react-navigation";
@@ -27,7 +27,15 @@ const RecordScreen = ({ isFocused }) => {
       {/* <Camera style={{ flex: 1 }} />
       <Map shouldTrack={isFocused} callback={callback} style={{ flex: 1 }} /> */}
       <SplitPane
-        childOne={<Camera style={{ flex: 1 }} />}
+        childOne={
+          <Camera
+            style={{ flex: 1 }}
+            recStatus={recStatus}
+            setRecStatus={() => {
+              setRecStatus(!recStatus);
+            }}
+          />
+        }
         childTwo={
           <Map
             shouldTrack={isFocused}

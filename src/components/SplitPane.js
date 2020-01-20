@@ -16,8 +16,8 @@ export default class MyComponent extends Component {
 
     this.state = {
       offset: 0,
-      topHeight: Dimensions.get("window").height / 4, // min height for top pane header
-      bottomHeight: Dimensions.get("window").height / 4, // min height for bottom pane header,
+      topHeight: Dimensions.get("window").height / 4,
+      bottomHeight: Dimensions.get("window").height / 3,
       deviceHeight: Dimensions.get("window").height,
       isDividerClicked: false,
 
