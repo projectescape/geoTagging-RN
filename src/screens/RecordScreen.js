@@ -24,8 +24,6 @@ const RecordScreen = ({ isFocused }) => {
 
   return (
     <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1 }}>
-      {/* <Camera style={{ flex: 1 }} />
-      <Map shouldTrack={isFocused} callback={callback} style={{ flex: 1 }} /> */}
       <SplitPane
         childOne={
           <Camera

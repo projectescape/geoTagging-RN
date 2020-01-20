@@ -36,33 +36,25 @@ export default function App({ recStatus, setRecStatus }) {
     if (myCam)
       (async () => {
         if (recStatus) {
-          console.log("recording");
           const dat = await myCam.recordAsync({ quality: "480p" });
-          console.log(dat);
           //   Renaming from .mp4 to .geo.mp4
           const newAdd =
             dat.uri.slice(0, dat.uri.lastIndexOf(".mp4")) + ".geo.mp4";
-          console.log("newAdd : ", newAdd);
           await FileSystem.moveAsync({ from: dat.uri, to: newAdd });
           const asset = await MediaLibrary.createAssetAsync(newAdd);
           const album = await MediaLibrary.getAlbumAsync("geoLocation");
-          console.log("album : ", album);
           if (!album) {
-            console.log("Line 42");
             const temp = await MediaLibrary.createAlbumAsync(
               "geoLocation",
               asset,
               false
             );
-            console.log("Line 48 temp : ", temp);
           } else {
-            console.log("Line 50");
             const temp = await MediaLibrary.addAssetsToAlbumAsync(
               [asset],
               album,
               false
             );
-            console.log("Line 56 temp : ", temp);
           }
           setCamImgName(
             newAdd.slice(
@@ -71,7 +63,6 @@ export default function App({ recStatus, setRecStatus }) {
             )
           );
         } else {
-          console.log("Recording Stopped");
           myCam.stopRecording();
         }
       })();
@@ -81,8 +72,6 @@ export default function App({ recStatus, setRecStatus }) {
   useEffect(() => {
     if (camImgName) {
       (async () => {
-        console.log("camImgName : ", camImgName);
-        console.log("timeStamp : ", timeStamp);
         const filename =
           (await FileSystem.cacheDirectory) + camImgName + ".geo";
         const data = await FileSystem.writeAsStringAsync(
@@ -96,10 +85,6 @@ export default function App({ recStatus, setRecStatus }) {
           album,
           false
         );
-        console.log("Data : ", data);
-        console.log("asset : ", asset);
-        console.log("asset : ", asset);
-        console.log("temp : ", temp);
         resetPathArray();
         setCamImgName(null);
       })();

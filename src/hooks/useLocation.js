@@ -9,14 +9,6 @@ export default (shouldTrack, callback) => {
   const [err, setErr] = useState(null);
 
   useEffect(() => {
-    console.log("shouldTrack updated : ", shouldTrack);
-  }, [shouldTrack]);
-
-  useEffect(() => {
-    console.log("callback updated ");
-  }, [callback]);
-
-  useEffect(() => {
     let subscriber = null;
     const startWatching = async () => {
       try {
