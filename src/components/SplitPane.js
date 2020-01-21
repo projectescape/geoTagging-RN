@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default class MyComponent extends Component {
+export default class SplitPane extends Component {
   constructor(props) {
     super(props);
 

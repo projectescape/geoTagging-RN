@@ -4,12 +4,25 @@ import MapView, { Polyline, Circle } from "react-native-maps";
 import useLocation from "../hooks/useLocation";
 import LocationContext from "../context/LocationContext";
 
-const Map = ({ shouldTrack, callback }) => {
+const Map = ({
+  shouldTrack = false,
+  callback = () => {
+    return null;
+  },
+  playbackMode = false
+}) => {
   const [err] = useLocation(shouldTrack, callback);
 
   if (err) {
     return <Text>EnableLocation</Text>;
   }
+
+  const getCircleLocation = () => {
+    if (!playbackMode) {
+      return currentLocation.coords;
+    }
+    return pathArray[0].coords;
+  };
 
   useEffect(() => {
     // console.log("Inside map recStatus : ", recStatus);
@@ -22,33 +35,40 @@ const Map = ({ shouldTrack, callback }) => {
     <MapView
       style={{ flex: 1 }}
       initialRegion={{
-        latitude: currentLocation ? currentLocation.coords.latitude : 30.751883,
-        longitude: currentLocation
-          ? currentLocation.coords.longitude
-          : 76.9125063,
+        ...(playbackMode
+          ? pathArray[0].coords
+          : currentLocation
+          ? currentLocation.coords
+          : { longitude: 76.3609616, latitude: 30.3525405 }),
         latitudeDelta: 0.01,
         longitudeDelta: 0.01
       }}
       region={
-        currentLocation
+        currentLocation && !playbackMode
           ? {
               latitude: currentLocation.coords.latitude,
               longitude: currentLocation.coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01
+              latitudeDelta: 0.006,
+              longitudeDelta: 0.006
             }
           : null
       }
     >
       {currentLocation ? (
         <Circle
-          center={currentLocation.coords}
+          center={getCircleLocation()}
           radius={30}
           strokeColor="rgba(158, 158, 255, 1.0)"
-          fillColor="rgba(158, 158, 255, 0.3)"
+          fillColor="rgba(158, 158, 255, 0.85)"
         />
       ) : null}
-      <Polyline coordinates={pathArray.map(loc => loc.coords)} />
+      <Polyline
+        tappable
+        coordinates={pathArray.map(loc => loc.coords)}
+        onPress={loc => {
+          console.log(loc);
+        }}
+      />
     </MapView>
   );
 };

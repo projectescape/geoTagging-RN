@@ -1,25 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image
-} from "react-native";
-import {
-  Container,
-  Header,
-  Content,
-  Card,
-  CardItem,
-  Thumbnail,
-  Text,
-  Button,
-  Icon,
-  Left,
-  Body,
-  Right
-} from "native-base";
+import { StyleSheet, FlatList, TouchableOpacity, Image } from "react-native";
+
 import * as MediaLibrary from "expo-media-library";
 
 const GalleryScreen = ({ navigation }) => {
@@ -42,30 +23,33 @@ const GalleryScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <Container>
+    <>
       <FlatList
         data={asset}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("Playback", {
-                uri: item.uri
+                pathUri: item.uri.slice(0, item.uri.lastIndexOf(".mp4")),
+                asset: item
               });
             }}
           >
-            <Card>
-              <CardItem></CardItem>
-              <CardItem cardBody>
-                <Image
-                  source={{ uri: item.uri }}
-                  style={{ height: 200, width: null, flex: 1 }}
-                />
-              </CardItem>
-            </Card>
+            <Image
+              source={{ uri: item.uri }}
+              style={{
+                height: 200,
+                width: null,
+                flex: 1,
+                marginTop: 15,
+                marginHorizontal: 15,
+                borderRadius: 10
+              }}
+            />
           </TouchableOpacity>
         )}
       />
-    </Container>
+    </>
   );
 };
 

@@ -7,13 +7,19 @@ import GalleryScreen from "./src/screens/GalleryScreen";
 import PlaybackScreen from "./src/screens/PlaybackScreen";
 import { LocationProvider } from "./src/context/LocationContext";
 
+const StackNavigator = createStackNavigator({
+  Gallery: GalleryScreen,
+  Playback: PlaybackScreen
+});
+
 const bottomNavigator = createBottomTabNavigator({
   Record: RecordScreen,
-  galleryFlow: createStackNavigator({
-    Gallery: GalleryScreen,
-    Playback: PlaybackScreen
-  })
+  galleryFlow: StackNavigator
 });
+
+StackNavigator.navigationOptions = {
+  title: "Gallery"
+};
 
 const App = createAppContainer(bottomNavigator);
 

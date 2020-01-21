@@ -20,6 +20,7 @@ export default (shouldTrack, callback) => {
             distanceInterval: 0
           },
           location => {
+            // console.log(location);
             callback(location);
           }
         );

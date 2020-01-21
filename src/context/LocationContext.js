@@ -10,6 +10,9 @@ const reducer = (state, action) => {
       return { ...state, pathArray: [...state.pathArray, action.payload] };
     case "resetPathArray":
       return { ...state, pathArray: [] };
+    case "setPathArray":
+      console.log("SetpathArray reducer run");
+      return { ...state, pathArray: action.payload };
     default:
       return state;
   }
@@ -26,6 +29,10 @@ export const LocationProvider = ({ children }) => {
   const updatePathArray = location => {
     dispatch({ type: "updatePathArray", payload: location });
   };
+  const setPathArray = location => {
+    dispatch({ type: "setPathArray", payload: location });
+    console.log("SetpathArray action run");
+  };
   const resetPathArray = () => {
     dispatch({ type: "resetPathArray" });
   };
@@ -37,7 +44,8 @@ export const LocationProvider = ({ children }) => {
         pathArray: state.pathArray,
         updateCurrentLocation,
         updatePathArray,
-        resetPathArray
+        resetPathArray,
+        setPathArray
       }}
     >
       {children}
