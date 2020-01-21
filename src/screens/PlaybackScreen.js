@@ -1,8 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const PlaybackScreen = () => {
-  return <Text style={{ fontSize: 48 }}>Playback Screen</Text>;
+const PlaybackScreen = ({ navigation }) => {
+  return (
+    <Text style={{ marginTop: 20 }}>
+      {JSON.stringify(navigation.getParam("uri", null))}
+    </Text>
+  );
 };
 
 const styles = StyleSheet.create({});
