@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, StyleSheet } from "react-native";
-import { Spinner } from "native-base";
 import SplitPane from "../components/SplitPane";
 import Map from "../components/Map";
 import { withNavigationFocus } from "react-navigation";
@@ -23,25 +22,6 @@ const PlaybackScreen = ({ navigation, isFocused }) => {
       }
     })();
   }, [isFocused]);
-
-  if (pathUri === "") {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignContent: "space-around"
-        }}
-      >
-        <Spinner
-          style={{
-            flex: 1
-          }}
-          color="#333"
-          size={40}
-        />
-      </View>
-    );
-  }
 
   return (
     <SplitPane
