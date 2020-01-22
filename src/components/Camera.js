@@ -7,8 +7,8 @@ import * as Permissions from "expo-permissions";
 import * as FileSystem from "expo-file-system";
 import LocationContext from "../context/LocationContext";
 
-export default function App({ recStatus, setRecStatus }) {
-  let myCam = null;
+export default function App({ recStatus, setRecStatus, isFocused }) {
+  const [myCam, setMyCam] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [camImgName, setCamImgName] = useState(null);
@@ -91,6 +91,81 @@ export default function App({ recStatus, setRecStatus }) {
     }
   }, [camImgName]);
 
+  const renderCamera = () => {
+    return (
+      <Camera
+        style={{ flex: 1 }}
+        type={type}
+        ratio="4:3"
+        useCamera2Api
+        ref={ref => {
+          setMyCam(ref);
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "transparent",
+            flexDirection: "row"
+          }}
+        />
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "transparent",
+            flexDirection: "row"
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-around"
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setRecStatus(!recStatus);
+              }}
+            >
+              <MaterialIcons
+                name={!recStatus ? "videocam" : "stop"}
+                size={100}
+                color="white"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "transparent",
+            flexDirection: "row"
+          }}
+        >
+          {!recStatus ? (
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                alignSelf: "flex-end",
+                alignItems: "center"
+              }}
+              onPress={() => {
+                setType(
+                  type === Camera.Constants.Type.back
+                    ? Camera.Constants.Type.front
+                    : Camera.Constants.Type.back
+                );
+              }}
+            >
+              <MaterialIcons name="switch-camera" color="white" size={40} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      </Camera>
+    );
+  };
+
   if (hasPermission === null) {
     return <View />;
   }
@@ -102,76 +177,7 @@ export default function App({ recStatus, setRecStatus }) {
       style={{ flex: 1, flexDirection: "row", justifyContent: "space-around" }}
     >
       <View style={{ aspectRatio: 3 / 4 }}>
-        <Camera
-          style={{ flex: 1 }}
-          type={type}
-          ratio="4:3"
-          useCamera2Api
-          ref={ref => {
-            myCam = ref;
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              flexDirection: "row"
-            }}
-          />
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              flexDirection: "row"
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-around"
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  setRecStatus(!recStatus);
-                }}
-              >
-                <MaterialIcons
-                  name={!recStatus ? "videocam" : "stop"}
-                  size={100}
-                  color="white"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              flexDirection: "row"
-            }}
-          >
-            {!recStatus ? (
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  alignSelf: "flex-end",
-                  alignItems: "center"
-                }}
-                onPress={() => {
-                  setType(
-                    type === Camera.Constants.Type.back
-                      ? Camera.Constants.Type.front
-                      : Camera.Constants.Type.back
-                  );
-                }}
-              >
-                <MaterialIcons name="switch-camera" color="white" size={40} />
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        </Camera>
+        {isFocused ? renderCamera() : null}
       </View>
     </View>
   );

@@ -23,7 +23,7 @@ const PlaybackScreen = ({ navigation, isFocused }) => {
     })();
   }, [isFocused]);
 
-  return (
+  return isFocused ? (
     <SplitPane
       childOne={<VideoPlayer asset={asset} />}
       childTwo={
@@ -35,7 +35,7 @@ const PlaybackScreen = ({ navigation, isFocused }) => {
         />
       }
     ></SplitPane>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({});
