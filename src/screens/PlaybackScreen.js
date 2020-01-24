@@ -32,6 +32,7 @@ const PlaybackScreen = ({ navigation, isFocused }) => {
           callback={() => {}}
           style={{ flex: 1 }}
           onRecordScreen={false}
+          playbackMode = {true}
         />
       }
     ></SplitPane>

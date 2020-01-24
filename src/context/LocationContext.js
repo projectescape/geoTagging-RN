@@ -5,6 +5,7 @@ const LocationContext = React.createContext();
 const reducer = (state, action) => {
   switch (action.type) {
     case "updateCurrentLocation":
+      // console.log("location updated");
       return { ...state, currentLocation: action.payload };
     case "updatePathArray":
       return { ...state, pathArray: [...state.pathArray, action.payload] };
@@ -25,6 +26,7 @@ export const LocationProvider = ({ children }) => {
 
   const updateCurrentLocation = location => {
     dispatch({ type: "updateCurrentLocation", payload: location });
+    // console.log("location actually updated");
   };
   const updatePathArray = location => {
     dispatch({ type: "updatePathArray", payload: location });

@@ -16,12 +16,13 @@ const Map = ({
   if (err) {
     return <Text>EnableLocation</Text>;
   }
+  const { currentLocation, pathArray } = useContext(LocationContext);
 
   const getCircleLocation = () => {
     if (!playbackMode) {
       return currentLocation.coords;
     }
-    return pathArray[0].coords;
+    return currentLocation.coords;
   };
 
   useEffect(() => {
@@ -29,20 +30,11 @@ const Map = ({
     // console.log("Inside map isFocused : ", isFocused);
   }, [shouldTrack]);
 
-  const { currentLocation, pathArray } = useContext(LocationContext);
-
   return (
     <MapView
       style={{ flex: 1 }}
-      initialRegion={{
-        ...(playbackMode
-          ? pathArray[0].coords
-          : currentLocation
-          ? currentLocation.coords
-          : { longitude: 76.3609616, latitude: 30.3525405 }),
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01
-      }}
+      initialRegion={currentLocation?{...currentLocation.coords,latitudeDelta: 0.006,
+        longitudeDelta: 0.006}:null}
       region={
         currentLocation && !playbackMode
           ? {
@@ -64,6 +56,8 @@ const Map = ({
       ) : null}
       <Polyline
         tappable
+        strokeWidth={4}
+        strokeColor="rgba(0, 0, 127, 0.7)"
         coordinates={pathArray.map(loc => loc.coords)}
         onPress={loc => {
           console.log(loc);
