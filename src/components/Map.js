@@ -19,6 +19,7 @@ const Map = ({
   const { currentLocation, pathArray } = useContext(LocationContext);
 
   const getCircleLocation = () => {
+    console.log("in get location");
     if (!playbackMode) {
       return currentLocation.coords;
     }
