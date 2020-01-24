@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
-import { Text, StyleSheet } from "react-native";
-import MapView, { Polyline, Circle } from "react-native-maps";
+import { Text, StyleSheet, View } from "react-native";
+import MapView, { Polyline, Circle, Marker } from "react-native-maps";
 import useLocation from "../hooks/useLocation";
 import LocationContext from "../context/LocationContext";
 
@@ -47,12 +47,18 @@ const Map = ({
       }
     >
       {currentLocation ? (
+        <View>
         <Circle
           center={getCircleLocation()}
-          radius={30}
+          radius={10}
           strokeColor="rgba(158, 158, 255, 1.0)"
           fillColor="rgba(158, 158, 255, 0.85)"
         />
+        <Marker 
+        coordinate = {getCircleLocation()}
+        rotation = {getCircleLocation().heading} 
+        image = {require('../../assets/arrowForMe.png')}/>
+        </View>
       ) : null}
       <Polyline
         tappable
