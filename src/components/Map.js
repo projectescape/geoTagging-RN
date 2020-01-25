@@ -49,22 +49,26 @@ const Map = ({
     >
       {currentLocation ? (
         <View>
-        <Circle
+        {/* <Circle
           center={getCircleLocation()}
           radius={10}
           strokeColor="rgba(158, 158, 255, 1.0)"
           fillColor="rgba(158, 158, 255, 0.85)"
-        />
+        /> */}
         <Marker 
         coordinate = {getCircleLocation()}
-        rotation = {getCircleLocation().heading} 
+        rotation = {getCircleLocation().heading}
+        anchor = {{
+          x: 0.5,
+          y: 0.5
+        }} 
         image = {require('../../assets/arrowForMe.png')}/>
         </View>
       ) : null}
       <Polyline
         tappable
         strokeWidth={4}
-        strokeColor="rgba(0, 0, 127, 0.7)"
+        strokeColor="rgba(0, 0, 255, 0.2)"
         coordinates={pathArray.map(loc => loc.coords)}
         onPress={loc => {
           console.log(loc);
