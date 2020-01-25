@@ -40,6 +40,7 @@ export default function App({ recStatus, setRecStatus, isFocused }) {
           //   Renaming from .mp4 to .geo.mp4
           const newAdd =
             dat.uri.slice(0, dat.uri.lastIndexOf(".mp4")) + ".geo.mp4";
+          console.log("newAdd", newAdd);
           await FileSystem.moveAsync({ from: dat.uri, to: newAdd });
           const asset = await MediaLibrary.createAssetAsync(newAdd);
           const album = await MediaLibrary.getAlbumAsync("geoLocation");
@@ -78,15 +79,22 @@ export default function App({ recStatus, setRecStatus, isFocused }) {
           filename,
           JSON.stringify({ timeStamp, pathArray })
         );
-        const asset = await MediaLibrary.createAssetAsync(filename);
-        const album = await MediaLibrary.getAlbumAsync("geoLocation");
-        const temp = await MediaLibrary.addAssetsToAlbumAsync(
-          [asset],
-          album,
-          false
-        );
-        resetPathArray();
-        setCamImgName(null);
+        console.log("filename : ", filename);
+        const asset = await MediaLibrary.createAssetAsync(filename, {
+          encoding: FileSystem.EncodingType.Base64
+        });
+        try {
+          const album = await MediaLibrary.getAlbumAsync("geoLocation");
+          const temp = await MediaLibrary.addAssetsToAlbumAsync(
+            [asset],
+            album,
+            false
+          );
+          resetPathArray();
+          setCamImgName(null);
+        } catch (e) {
+          console.log(e.message);
+        }
       })();
     }
   }, [camImgName]);
