@@ -5,24 +5,22 @@ import LocationContext from "../context/LocationContext";
 const VideoPlayer = ({ asset }) => {
   const { pathArray, updateCurrentLocation } = useContext(LocationContext);
   const [time, setTime] = useState([]);
-  function binarySearch(arr, i) {
-    var mid = Math.floor(arr.length / 2);
-    console.log(arr[mid], i);
-    if (arr[mid] === i) {
-      console.log("match", arr[mid], i);
-      return arr[mid];
-    } else if (arr[mid] < i && arr.length > 1) {
-      console.log("mid lower", arr[mid], i);
-      binarySearch(arr.splice(mid, Number.MAX_VALUE), i);
-    } else if (arr[mid] > i && arr.length > 1) {
-      console.log("mid higher", arr[mid], i);
-      binarySearch(arr.splice(0, mid), i);
-    } else {
-      console.log("not here", i);
-      //if(arr[0] != -1){
-      console.log("==-== ", arr[0]);
-      return arr[0];
+  const binarySearch = function (arr, x) {
+    let start = 0, end = arr.length - 1;
+    // Iterate while start not meets end 
+    let mid = 0;
+    while (start <= end) {
+      // Find the mid index 
+      mid = Math.floor((start + end) / 2);
+      // If element is present at mid, return True 
+      if (arr[mid] === x) return (mid);
+      // Else look in left or right half accordingly 
+      else if (arr[mid] < x)
+        start = mid + 1;
+      else
+        end = mid - 1;
     }
+    return mid;
   }
 
   const linearSearch = (arr, i) => {
@@ -68,8 +66,9 @@ const VideoPlayer = ({ asset }) => {
     //pathArray[time.indexOf(binarySearch(time, positionMillis), 0)].coords
     //);
     // console.log("======>>" , pathArray[linearSearch(time, positionMillis)]);
-    updateCurrentLocation(pathArray[linearSearch(time, positionMillis)]);
-    
+    //console.log("Hi");
+    updateCurrentLocation(pathArray[binarySearch(time, positionMillis)]);
+
   };
 
   return (
@@ -81,7 +80,7 @@ const VideoPlayer = ({ asset }) => {
       resizeMode={Video.RESIZE_MODE_CONTAIN}
       shouldPlay
       useNativeControls
-      progressUpdateIntervalMillis={500}
+      progressUpdateIntervalMillis={1000}
       onPlaybackStatusUpdate={({ positionMillis }) => {
         updateMap(positionMillis);
       }}
