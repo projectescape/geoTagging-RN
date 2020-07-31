@@ -1,27 +1,27 @@
-import React, { useContext, useEffect, useState } from "react";
 import { Video } from "expo-av";
+import React, { useContext, useEffect, useState } from "react";
+import { throttle } from "throttle-debounce";
 import LocationContext from "../context/LocationContext";
 
 const VideoPlayer = ({ asset }) => {
   const { pathArray, updateCurrentLocation } = useContext(LocationContext);
   const [time, setTime] = useState([]);
   const binarySearch = function (arr, x) {
-    let start = 0, end = arr.length - 1;
-    // Iterate while start not meets end 
+    let start = 0,
+      end = arr.length - 1;
+    // Iterate while start not meets end
     let mid = 0;
     while (start <= end) {
-      // Find the mid index 
+      // Find the mid index
       mid = Math.floor((start + end) / 2);
-      // If element is present at mid, return True 
-      if (arr[mid] === x) return (mid);
-      // Else look in left or right half accordingly 
-      else if (arr[mid] < x)
-        start = mid + 1;
-      else
-        end = mid - 1;
+      // If element is present at mid, return True
+      if (arr[mid] === x) return mid;
+      // Else look in left or right half accordingly
+      else if (arr[mid] < x) start = mid + 1;
+      else end = mid - 1;
     }
     return mid;
-  }
+  };
 
   const linearSearch = (arr, i) => {
     for (index = 0; index < arr.length; index++) {
@@ -57,7 +57,7 @@ const VideoPlayer = ({ asset }) => {
     //console.log("==> " + timst)
   }, [pathArray]);
 
-  const updateMap = positionMillis => {
+  const updateMap = (positionMillis) => {
     //setMapCur(binarySearch(timest, cur));
     // console.log("=====>>>>", time);
     //console.log(time.indexOf(binarySearch(time, positionMillis), 0));
@@ -68,8 +68,11 @@ const VideoPlayer = ({ asset }) => {
     // console.log("======>>" , pathArray[linearSearch(time, positionMillis)]);
     //console.log("Hi");
     updateCurrentLocation(pathArray[binarySearch(time, positionMillis)]);
-
   };
+
+  const throttleFunc = throttle(1000, true, (pos) => {
+    updateMap(pos);
+  });
 
   return (
     <Video
@@ -82,7 +85,7 @@ const VideoPlayer = ({ asset }) => {
       useNativeControls
       progressUpdateIntervalMillis={1000}
       onPlaybackStatusUpdate={({ positionMillis }) => {
-        updateMap(positionMillis);
+        throttleFunc(positionMillis);
       }}
       style={{ flex: 1 }}
     />
